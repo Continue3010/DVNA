@@ -1,13 +1,19 @@
 # Damn Vulnerable NodeJS Application
 
-FROM node:carbon
+# Damn Vulnerable NodeJS Application
+# https://github.com/appsecco/dvna
+
+FROM node:18 
+
 LABEL MAINTAINER "Subash SN"
 
 WORKDIR /app
 
+# Sao chép tất cả mã nguồn vào container
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh \
-	&& npm install
+# Cài đặt phụ thuộc và cấp quyền cho entrypoint.sh
+RUN chmod +x /app/entrypoint.sh && npm install
 
+# Khởi động ứng dụng
 CMD ["bash", "/app/entrypoint.sh"]

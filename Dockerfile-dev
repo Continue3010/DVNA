@@ -1,11 +1,22 @@
 # Damn Vulnerable NodeJS Application
 # https://github.com/appsecco/dvna
 
-FROM node:carbon
+FROM node:18 # Sử dụng image Node.js phiên bản 18
 LABEL MAINTAINER "Subash SN"
 
 WORKDIR /app
 
+# Cài đặt nodemon
 RUN npm install -g nodemon
 
-CMD ["/bin/bash", "/app/entrypoint-dev.sh"]
+# Sao chép package.json và package-lock.json (nếu có) vào thư mục làm việc
+COPY package*.json ./
+
+# Cài đặt các phụ thuộc từ package.json
+RUN npm install
+
+# Sao chép mã nguồn vào container
+COPY . .
+
+# Khởi động ứng dụng
+CMD ["nodemon", "/app/entrypoint-dev.sh"]
