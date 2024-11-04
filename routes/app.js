@@ -17,7 +17,7 @@ module.exports = function () {
         res.render('app/ping', {
             output: null
         })
-    })
+    }) 
 
     router.get('/bulkproducts', authHandler.isAuthenticated, function (req, res) {
         res.render('app/bulkproducts',{legacy:req.query.legacy})

