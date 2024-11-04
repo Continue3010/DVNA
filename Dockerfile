@@ -3,7 +3,7 @@
 # Damn Vulnerable NodeJS Application
 # https://github.com/appsecco/dvna
 
-FROM node:18 
+FROM node:20
 
 LABEL MAINTAINER "Subash SN"
 
