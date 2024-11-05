@@ -1,5 +1,7 @@
 #!/bin/bash
 
-chmod +x /app/wait-for-it.sh
+# Chờ đợi cơ sở dữ liệu khởi động (nếu cần)
+./wait-for-it.sh db:5432 --timeout=30 --strict -- echo "Database is up"
 
-/bin/bash /app/wait-for-it.sh $MYSQL_HOST:$MYSQL_PORT -t 300 -- npm start
+# Khởi động ứng dụng Node.js
+npm start

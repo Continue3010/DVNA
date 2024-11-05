@@ -1,11 +1,20 @@
-FROM node:carbon
-LABEL MAINTAINER "Subash SN"
+# Chọn phiên bản Node.js
+FROM node:21
 
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
+# Sao chép package.json và package-lock.json (nếu có)
+COPY package*.json ./
+
+# Cài đặt các phụ thuộc
+RUN npm install
+
+# Sao chép toàn bộ mã nguồn vào thư mục làm việc
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh \
-	&& npm install
+# Mở cổng ứng dụng
+EXPOSE 9090
 
-CMD ["bash", "/app/entrypoint.sh"]
+# Lệnh để khởi động ứng dụng
+CMD ["node", "server.js"]

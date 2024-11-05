@@ -1,23 +1,18 @@
-# Damn Vulnerable NodeJS Application
+version: '3.8'
 
-version: "2.1"
 services:
-  app:
-    build:
-      context: ./
-      dockerfile: Dockerfile-dev
-    ports:
-      - 9090:9090
-    volumes:
-      - .:/app
-    depends_on:
-      - mysql-db
-    env_file:
-      - ./vars.env
-
   mysql-db:
     image: mysql:5.7
-    expose:
-      - "3306"
-    env_file:
-      - ./vars.env
+    env_file: vars.env
+    ports:
+      - "3306:3306"
+    restart: always
+
+  app:
+    build: .
+    ports:
+      - "9091:9090"
+    env_file: vars.env
+    depends_on:
+      - mysql-db
+    restart: always
