@@ -10,6 +10,14 @@ module.exports.isAuthenticated = function (req, res, next) {
 	res.redirect('/login');
 }
 
+module.exports.isAdmin = function (req, res, next){
+	if(req.user.role=='admin')
+		next()
+	else
+		res.status(401).send('Unauthorized')
+  }
+
+
 module.exports.isNotAuthenticated = function (req, res, next) {
 	if (!req.isAuthenticated())
 		return next();
