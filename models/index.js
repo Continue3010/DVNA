@@ -15,6 +15,7 @@ if (process.env.DATABASE_URL) {
     config.password,
     {
       host: config.host,
+      port: config.port,
       dialect: config.dialect,
       logging: false,
     }
