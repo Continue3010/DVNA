@@ -5,6 +5,7 @@ var mathjs = require("mathjs");
 var libxmljs = require("libxmljs");
 var serialize = require("node-serialize");
 const Op = db.Sequelize.Op;
+var vh = require('./validationHandler')
 
 module.exports.userSearch = function (req, res) {
   // var query = "SELECT name,id FROM Users WHERE login='" + req.body.login + "'";
@@ -191,50 +192,50 @@ module.exports.userEdit = function (req, res) {
 };
 
 module.exports.userEditSubmit = function (req, res) {
-  db.User.find({
-    where: {
-      id: req.body.id,
-    },
-  }).then((user) => {
-    if (req.body.password.length > 0) {
-      if (req.body.password.length > 0) {
-        if (req.body.password == req.body.cpassword) {
-          user.password = bCrypt.hashSync(
-            req.body.password,
-            bCrypt.genSaltSync(10),
-            null
-          );
-        } else {
-          req.flash("warning", "Passwords dont match");
-          res.render("app/useredit", {
+	if(vh.vEmail(req.body.email)&&vh.vName(req.body.name)){
+    if(req.body.password.length>0){
+			if(vh.vPassword(req.body.password)){
+				if (req.body.password == req.body.cpassword) {
+					req.user.password = bCrypt.hashSync(req.body.password, bCrypt.genSaltSync(10), null)
+				}else{
+          req.flash('warning', 'Passwords dont match')
+					res.render('app/useredit', {
             userId: req.user.id,
-            userEmail: req.user.email,
-            userName: req.user.name,
-          });
-          return;
-        }
-      } else {
-        req.flash("warning", "Invalid Password");
-        res.render("app/useredit", {
-          userId: req.user.id,
-          userEmail: req.user.email,
-          userName: req.user.name,
-        });
-        return;
-      }
-    }
-    user.email = req.body.email;
-    user.name = req.body.name;
-    user.save().then(function () {
-      req.flash("success", "Updated successfully");
-      res.render("app/useredit", {
-        userId: req.body.id,
-        userEmail: req.body.email,
-        userName: req.body.name,
-      });
-    });
-  });
-};
+						userEmail: req.user.email,
+						userName: req.user.name,
+					})
+          return		
+				}
+      }else{
+				req.flash('warning', 'Invalid Password. Minimum length of a password is 8')
+				res.render('app/useredit', {
+          userId: req.body.id,
+					userEmail: req.body.email,
+					userName: req.body.name,
+				})
+				return
+			}
+		}
+		req.user.email = req.body.email
+		req.user.name = req.body.name
+		req.user.save().then(function () {
+			req.flash('success',"Updated successfully")
+			res.render('app/useredit', {
+				userId: req.user.id,
+				userEmail: req.user.email,
+				userName: req.user.name,
+			})
+		})
+	}else{
+		req.flash('danger', 'Invalid Profile information')
+		res.render('app/useredit', {
+			userId: req.body.id,
+			userEmail: req.body.email,
+			userName: req.body.name,
+		})
+	}
+}
+
 
 module.exports.redirect = function (req, res) {
   if (req.query.url) {
@@ -245,15 +246,22 @@ module.exports.redirect = function (req, res) {
 };
 
 module.exports.calc = function (req, res) {
-  if (req.body.eqn) {
+  try{
+    if (req.body.eqn) {
+      res.render("app/calc", {
+        output: mathjs.eval(req.body.eqn),
+      });
+    } else {
+      res.render("app/calc", {
+        output: "Enter a valid math string like (3+3)*2",
+      });
+    }
+  }catch(err){
     res.render("app/calc", {
-      output: mathjs.eval(req.body.eqn),
-    });
-  } else {
-    res.render("app/calc", {
-      output: "Enter a valid math string like (3+3)*2",
+      output: "Invalid Equation",
     });
   }
+ 
 };
 
 module.exports.listUsersAPI = function (req, res) {
