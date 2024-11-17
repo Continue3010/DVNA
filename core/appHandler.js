@@ -1,6 +1,6 @@
 var db = require("../models");
 var bCrypt = require("bcrypt");
-const exec = require("child_process").exec;
+const execFile = require("child_process").execFile;
 var mathjs = require("mathjs");
 var libxmljs = require("libxmljs");
 var serialize = require("node-serialize");
@@ -81,14 +81,60 @@ module.exports.userSearch = function (req, res) {
 //       });
 //     });
 // };
+module.exports.userSearch = function (req, res) {
+  if (vh.vCode(req.body.login)) {
+    db.User.findOne({
+      where: { login: req.body.login },
+    })
+      .then((user) => {
+        if (user) {
+          var output = {
+            user: {
+              name: user.name,
+              id: user.id,
+            },
+          };
+          res.render("app/usersearch", {
+            output: output,
+          });
+        } else {
+          req.flash("warning", "User not found");
+          res.render("app/usersearch", {
+            output: null,
+          });
+        }
+      })
+      .catch((err) => {
+        req.flash("danger", "Internal Error");
+        res.render("app/usersearch", {
+          output: null,
+        });
+      });
+  } else {
+    req.flash("danger", "Invalid login input");
+    res.render("app/usersearch", {
+      output: null,
+    });
+  }
+};
 
 module.exports.ping = function (req, res) {
-  exec("ping -c 2 " + req.body.address, function (err, stdout, stderr) {
-    output = stdout + stderr;
-    res.render("app/ping", {
-      output: output,
-    });
-  });
+  if (vh.vIP(req.body.address)) {
+    execFile(
+      "ping",
+      ["-c", "2", req.body.address],
+      function (err, stdout, stderr) {
+        if (err) {
+          return res.render("app/ping", { output: `Error: ${err.message}` });
+        }
+        res.render("app/ping", {
+          output: stdout + stderr,
+        });
+      }
+    );
+  } else {
+    res.render("app/ping", { output: "Invalid IP address or domain." });
+  }
 };
 
 module.exports.listProducts = function (req, res) {

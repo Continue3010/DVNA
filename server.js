@@ -22,7 +22,7 @@ app.use(fileUpload());
 // Intialize Session
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: config.sessionSecret,
     resave: true,
     saveUninitialized: true,
     cookie: { secure: false },
@@ -43,4 +43,4 @@ app.use("/", require("./routes/main")(passport));
 // Start Server
 app.listen(config.port, config.listen);
 
-app.disable('x-powered-by')
+app.disable("x-powered-by");
